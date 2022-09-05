@@ -103,20 +103,21 @@ def decode_y(addry):
 	return
 
 def set_data(addrx,addry,sw_data):
-	# CS goes high
-	cs.value = HIGH
-
 	# set address
 	decode_x(addrx)
 	decode_y(addry)
+	# set data 
+	data.value = int(sw_data)
+	sleep(.001)
+
+	# CS goes high
+	cs.value = HIGH
+	sleep(.0001)
 
 	# strobe high for 20ns
 	strobe.value = HIGH
 	sleep(.0001)
 
-	# set data 
-	data.value = int(sw_data)
-	sleep(.0001)
 
 	# stobe go low
 	strobe.value = LOW
@@ -177,4 +178,3 @@ def ctl_245s(state):
 	ctl245_dir.value = False # B to A
 	ctl245_en.value = not state
 	return
-	
