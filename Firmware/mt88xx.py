@@ -103,6 +103,8 @@ def decode_y(addry):
 	return
 
 def set_data(addrx,addry,sw_data):
+	# print("[set_data] Nope!")
+	# return
 	# set address
 	decode_x(addrx)
 	decode_y(addry)
@@ -135,6 +137,8 @@ def all_states(data):
 def init_values():
 	# put mt88xx into known state
 	print("Init MT8816 State")
+	# print("LOLOLOL NOT DOING IT!!!")
+	# return
 	reset.value = True
 	sleep(0.1)
 	reset.value = False
@@ -171,6 +175,8 @@ def init_values():
 def ctl_245s(state):
 	# state is human readable, CE is active low
 	# U2
+	# print("[ctl_245s] Nope!")
+	# return
 	mtx245_dir.value = True  # A to B
 	mtx245_en.value = not state
 
@@ -178,3 +184,4 @@ def ctl_245s(state):
 	ctl245_dir.value = False # B to A
 	ctl245_en.value = not state
 	return
+	
