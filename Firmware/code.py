@@ -30,9 +30,34 @@ def handle_serial():
             print("Connected!")
             serial_connect_flag = False
         if (serial.in_waiting > 0):
-            byte = serial.read(1).decode('utf-8')
-            set_key(byte, False, False, False)
-            #print(byte.decode('utf-8'),end='')
+            byte = serial.read(1)
+            if (byte.decode('utf-8') == chr(27)): # esc
+                sleep(0.05)
+                quik_str  = serial.read(2)
+                print(quik_str)
+                if (quik_str == b'[A'): # up
+                    set_colrow(0,7, True, False)
+                if (quik_str == b'[B'): # down
+                    set_colrow(0,7, False, False)
+                if (quik_str == b'[C'): # right
+                    set_colrow(0,2, False, False)
+                if (quik_str == b'[D'): # left
+                    set_colrow(0,2, True, False)
+                if (quik_str == b''):
+                    set_key(chr(27), False, False, False)
+            elif (byte.decode('utf-8') == chr(9)): #tab
+                    print("tab...")
+                    while (serial.in_waiting ==0):
+                        pass
+                    ctrled_key = serial.read(1).decode('utf-8')
+                    set_key(ctrled_key,False,True,False)
+
+            else: 
+                print("raw: ", end='')
+                print(byte)
+                key = byte.decode('utf-8')
+                set_key(key, False, False, False)
+
 
 def get_serial():
     value = 0
@@ -64,14 +89,20 @@ sleep(0.1)
 mt88xx.reset.value = LOW
 print("Doing the thing")
 
-def set_colrow(ax,ay,shifted):
+def set_colrow(ax,ay,shifted,ctrled):
     if (shifted==1):
         mt88xx.set_data(1,7,True)
+    if (ctrled==True):
+        mt88xx.set_data(7,2,True)
+
     mt88xx.set_data(ax,ay,True)
     sleep(0.1)
     mt88xx.set_data(ax,ay,False)
+
     if (shifted==1):
         mt88xx.set_data(1,7, False)
+    if (ctrled==True):
+        mt88xx.set_data(7,2,False)
     return
 
     # key_map = [
@@ -88,14 +119,16 @@ def set_key(key,shifted,ctrled,cbmkey):
     decoded = False
     try:
         coords = c64_keys.key_map[key]
-        ax,ay = coords
+        ax,ay,shifted = coords
         decoded = True
     except:
-        print(f"Don't know: [{key}]")
+        ascii_value = ord(key)
+        print(f"ascii: [{ascii_value}]")
+        print(f"  key: [{key}]")
 
     if (decoded):
         print(f"key: {key}, ax: {ax}, ay: {ay}")
-        set_colrow(ax,ay,False)
+        set_colrow(ax,ay,shifted,ctrled)
     return
 
 while True:
